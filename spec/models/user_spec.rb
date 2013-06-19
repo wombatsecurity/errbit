@@ -49,15 +49,6 @@ describe User do
       user.watchers.should include(watcher)
     end
 
-    it "destroys any related watchers when it is destroyed" do
-      user = Fabricate(:user)
-      app  = Fabricate(:app)
-      watcher = Fabricate(:user_watcher, :app => app, :user => user)
-      user.watchers.should_not be_empty
-      user.destroy
-      app.reload.watchers.should_not include(watcher)
-    end
-
     it "has many apps through watchers" do
       user = Fabricate(:user)
       watched_app  = Fabricate(:app)
@@ -71,10 +62,12 @@ describe User do
 
   context "First user" do
     it "should be created this admin access via db:seed" do
-      require 'rake'
-      Errbit::Application.load_tasks
-      Rake::Task["db:seed"].execute
-      User.first.admin.should be_true
+      expect {
+        $stdout.stub(:puts => true)
+        require Rails.root.join('db/seeds.rb')
+      }.to change {
+        User.where(:admin => true).count
+      }.from(0).to(1)
     end
   end
 

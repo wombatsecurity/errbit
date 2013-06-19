@@ -13,5 +13,8 @@ config/newrelic.yml
 *~
 *.rbc
 .DS_Store
+*.rbx
+bin
+bundle
+coverage
 *#
-public/assets
