@@ -12,7 +12,7 @@ GEM
     actionmailer (3.2.13)
       actionpack (= 3.2.13)
       mail (~> 2.5.3)
-    actionmailer_inline_css (1.3.1)
+    actionmailer_inline_css (1.5.3)
       actionmailer (>= 3.0.0)
       nokogiri (>= 1.4.4)
       premailer (>= 1.7.1)
@@ -50,7 +50,7 @@ GEM
     better_errors (0.9.0)
       coderay (>= 1.0.0)
       erubis (>= 2.6.6)
-    binding_of_caller (0.7.1)
+    binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     bitbucket_rest_api (0.1.2)
       faraday (~> 0.8.1)
@@ -90,7 +90,8 @@ GEM
       rest-client
       simplecov (>= 0.7)
       thor
-    crack (0.3.2)
+    crack (0.4.0)
+      safe_yaml (~> 0.9.0)
     css_parser (1.3.4)
       addressable
     daemons (1.1.9)
@@ -103,12 +104,13 @@ GEM
     debugger-linecache (1.2.0)
     debugger-ruby_core_source (1.2.2)
     decent_exposure (2.2.0)
-    devise (1.5.4)
+    devise (2.2.4)
       bcrypt-ruby (~> 3.0)
-      orm_adapter (~> 0.0.3)
-      warden (~> 1.1)
+      orm_adapter (~> 0.1)
+      railties (~> 3.1)
+      warden (~> 1.2.1)
     diff-lcs (1.2.4)
-    dotenv (0.7.0)
+    dotenv (0.8.0)
     email_spec (1.4.0)
       launchy (~> 2.1)
       mail (~> 2.2)
@@ -121,7 +123,10 @@ GEM
       multipart-post (~> 1.1)
     faraday_middleware (0.8.8)
       faraday (>= 0.7.4, < 0.9)
-    ffi (1.8.1)
+    ffi (1.9.0)
+    flowdock (0.3.1)
+      httparty (~> 0.7)
+      multi_json
     foreman (0.63.0)
       dotenv (>= 0.7)
       thor (>= 0.13.6)
@@ -129,12 +134,10 @@ GEM
       tilt
     happymapper (0.4.0)
       libxml-ruby (~> 2.0)
-    has_scope (0.5.1)
     hashie (1.2.0)
     highline (1.6.19)
     hike (1.2.3)
-    hipchat (0.9.0)
-      httparty
+    hipchat (0.10.0)
       httparty
     hoi (0.0.6)
       httparty (> 0.6.0)
@@ -148,9 +151,6 @@ GEM
       multi_xml (>= 0.5.2)
     httpauth (0.2.0)
     i18n (0.6.1)
-    inherited_resources (1.4.0)
-      has_scope (~> 0.5.0)
-      responders (~> 0.9)
     journey (1.0.4)
     jquery-rails (2.1.4)
       railties (>= 3.0, < 5.0)
@@ -174,7 +174,7 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    meta_request (0.2.6)
+    meta_request (0.2.7)
       callsite
       rack-contrib
       railties
@@ -191,8 +191,8 @@ GEM
       bundler (>= 1.0.0)
       rails (>= 3.0.0)
       railties (>= 3.0.0)
-    multi_json (1.7.6)
-    multi_xml (0.5.3)
+    multi_json (1.7.7)
+    multi_xml (0.5.4)
     multipart-post (1.2.0)
     net-scp (1.1.1)
       net-ssh (>= 2.6.5)
@@ -201,7 +201,7 @@ GEM
     net-ssh (2.6.7)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-    nokogiri (1.5.9)
+    nokogiri (1.5.10)
     nokogiri-happymapper (0.5.7)
       nokogiri (~> 1.5)
     oauth2 (0.8.1)
@@ -225,7 +225,7 @@ GEM
     omniauth-oauth2 (1.1.1)
       oauth2 (~> 0.8.0)
       omniauth (~> 1.0)
-    orm_adapter (0.0.7)
+    orm_adapter (0.4.0)
     oruen_redmine_client (0.0.1)
       activeresource (>= 2.3.0)
     pivotal-tracker (0.5.10)
@@ -248,8 +248,10 @@ GEM
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
-    pry-rails (0.3.0)
+    pry-rails (0.3.1)
       pry (>= 0.9.10)
+    quiet_assets (1.0.2)
+      railties (>= 3.1, < 5.0)
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -278,13 +280,11 @@ GEM
       rdoc (~> 3.4)
       thor (>= 0.14.6, < 2.0)
     raindrops (0.11.0)
-    rake (10.0.4)
+    rake (10.1.0)
     rbx-require-relative (0.0.9)
     rdoc (3.12.2)
       json (~> 1.4)
     ref (1.0.5)
-    responders (0.9.3)
-      railties (~> 3.1)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     ri_cal (0.8.8)
@@ -310,6 +310,7 @@ GEM
     rushover (0.3.0)
       json
       rest-client
+    safe_yaml (0.9.3)
     selenium-webdriver (2.33.0)
       childprocess (>= 0.2.5)
       multi_json (~> 1.0)
@@ -347,7 +348,7 @@ GEM
     thor (0.18.1)
     tilt (1.4.1)
     timecop (0.6.1)
-    treetop (1.4.12)
+    treetop (1.4.14)
       polyglot
       polyglot (>= 0.3.1)
     turbo-sprockets-rails3 (0.3.6)
@@ -358,14 +359,14 @@ GEM
       execjs (>= 0.3.0)
       multi_json (~> 1.0, >= 1.0.2)
     underscore-rails (1.4.4)
-    unicorn (4.6.2)
+    unicorn (4.6.3)
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
     useragent (0.6.0)
     warden (1.2.1)
       rack (>= 1.0)
-    webmock (1.11.0)
+    webmock (1.12.0)
       addressable (>= 2.2.7)
       crack (>= 0.3.2)
     websocket (1.0.7)
@@ -379,7 +380,7 @@ PLATFORMS
 
 DEPENDENCIES
   SystemTimer
-  actionmailer_inline_css (~> 1.3.0)
+  actionmailer_inline_css
   airbrake
   better_errors
   binding_of_caller
@@ -393,10 +394,11 @@ DEPENDENCIES
   database_cleaner (~> 0.9.0)
   debugger
   decent_exposure
-  devise (~> 1.5.4)
+  devise
   email_spec
   execjs
   fabrication (~> 1.3.0)
+  flowdock
   foreman
   gitlab!
   haml
@@ -405,7 +407,6 @@ DEPENDENCIES
   hoptoad_notifier (~> 2.4)
   htmlentities
   httparty
-  inherited_resources
   jquery-rails (~> 2.1.4)
   kaminari (>= 0.14.1)
   launchy
@@ -420,6 +421,7 @@ DEPENDENCIES
   pivotal-tracker
   pjax_rails
   pry-rails
+  quiet_assets
   rack-ssl
   rack-ssl-enforcer
   rails (= 3.2.13)

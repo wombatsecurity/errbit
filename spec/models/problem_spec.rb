@@ -104,7 +104,7 @@ describe Problem do
 
     it "should record the time when it was resolved" do
       problem = Fabricate(:problem)
-      expected_resolved_at = Time.now
+      expected_resolved_at = Time.zone.now
       Timecop.freeze(expected_resolved_at) do
         problem.resolve!
       end
@@ -151,7 +151,6 @@ describe Problem do
       expect { Fabricate(:problem).unmerge! }.not_to raise_error
     end
   end
-
 
   context "Scopes" do
     context "resolved" do

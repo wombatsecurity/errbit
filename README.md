@@ -83,7 +83,7 @@ Password: password
 Installation
 ------------
 
-*Note*: This app is intended for people with experience deploying and maintining
+*Note*: This app is intended for people with experience deploying and maintaining
 Rails applications. If you're uncomfortable with any step below then Errbit is not
 for you.
 
@@ -151,6 +151,8 @@ cap deploy:setup deploy
 git clone http://github.com/errbit/errbit.git
 ```
   * Update `db/seeds.rb` with admin credentials for your initial login.
+
+  * Run `bundle`
 
   * Create & configure for Heroku
 
@@ -365,7 +367,7 @@ Errbit.configure do |config|
 end
 ```
 
-Then get the `notifier.js` from `errbit/public/javascript/notifier.js` and add to `application.js` on your rails app or inlcude `http://YOUR-ERRBIT-HOST/javascripts/notifier.js` on your `application.html.erb.`
+Then get the `notifier.js` from `errbit/public/javascript/notifier.js` and add to `application.js` on your rails app or include `http://YOUR-ERRBIT-HOST/javascripts/notifier.js` on your `application.html.erb.`
 
 Issue Trackers
 --------------
@@ -469,7 +471,11 @@ Solutions known to work are listed below:
 Develop on Errbit
 -----------------
 
-A guide can help on this way on  [**Errbit Advanced Developer Guide**](https://github.com/errbit/errbit/blob/master/docs/DEVELOPER-ADVANCED.md)
+A guide can help on this way on  [**Errbit Advanced Developer Guide**](docs/DEVELOPER-ADVANCED.md)
+
+## Other documentation
+
+* [All ENV variables availables to configure Errbit](docs/ENV-VARIABLES.md)
 
 TODO
 ----

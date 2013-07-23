@@ -5,19 +5,18 @@ gem 'mongoid', '~> 2.7.1'
 
 # Mongoid rails migration > 0.0.14 is not compatible to Mongoid 2.x
 gem 'mongoid_rails_migrations', '~> 0.0.14'
-gem 'devise', '~> 1.5.4'
+gem 'devise'
 gem 'haml'
 gem 'htmlentities'
 gem 'rack-ssl', :require => 'rack/ssl'   # force SSL
 
 gem 'useragent'
-gem 'inherited_resources'
 gem 'decent_exposure'
 gem 'strong_parameters'
 gem 'SystemTimer', :platform => :ruby_18
-gem 'actionmailer_inline_css', "~> 1.3.0"
+gem 'actionmailer_inline_css'
 gem 'kaminari', '>= 0.14.1'
-gem 'rack-ssl-enforcer'
+gem 'rack-ssl-enforcer', :require => false
 # fabrication 1.3.0 is last supporting ruby 1.8. Update when stop supporting this version too
 gem 'fabrication', "~> 1.3.0"   # Used for both tests and demo data
 gem 'rails_autolink'
@@ -65,6 +64,8 @@ gem 'hoi'
 gem 'rushover'
 # Hubot
 gem 'httparty'
+# Flowdock
+gem 'flowdock'
 
 # Authentication
 # ---------------------------------------
@@ -92,6 +93,7 @@ group :development, :test do
   end
 #  gem 'rpm_contrib'
 #  gem 'newrelic_rpm'
+  gem 'quiet_assets'
 end
 
 group :development do
