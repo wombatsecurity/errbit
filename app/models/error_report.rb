@@ -17,21 +17,19 @@ require 'hoptoad_notifier'
 class ErrorReport
   attr_reader :error_class, :message, :request, :server_environment, :api_key, :notifier, :user_attributes, :framework
 
+  cattr_accessor :fingerprint_strategy do
+    Fingerprint
+  end
+
   def initialize(xml_or_attributes)
     @attributes = (xml_or_attributes.is_a?(String) ? Hoptoad.parse_xml!(xml_or_attributes) : xml_or_attributes).with_indifferent_access
     @attributes.each{|k, v| instance_variable_set(:"@#{k}", v) }
   end
 
   def rails_env
-    server_environment['environment-name'] || 'development'
-  end
-
-  def component
-    request['component'] || 'unknown'
-  end
-
-  def action
-    request['action']
+    rails_env = server_environment['environment-name']
+    rails_env = 'development' if rails_env.blank?
+    rails_env
   end
 
   def app
@@ -69,8 +67,6 @@ class ErrorReport
   def error
     @error ||= app.find_or_create_err!(
       :error_class => error_class,
-      :component => component,
-      :action => action,
       :environment => rails_env,
       :fingerprint => fingerprint
     )
@@ -80,10 +76,19 @@ class ErrorReport
     !!app
   end
 
+  def should_keep?
+    app_version = server_environment['app-version'] || ''
+    if self.app.current_app_version.present? && ( app_version.length <= 0 || Gem::Version.new(app_version) < Gem::Version.new(self.app.current_app_version) )
+      false
+    else
+      true
+    end
+  end
+
   private
 
   def fingerprint
-    @fingerprint ||= Fingerprint.generate(notice, api_key)
+    @fingerprint ||= fingerprint_strategy.generate(notice, api_key)
   end
 
 end

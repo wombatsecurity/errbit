@@ -6,7 +6,7 @@ if config_file.file? &&
 elsif ENV['HEROKU'] || ENV['USE_ENV']
   # No mongoid.yml file. Use ENV variable to define your MongoDB
   # configuration
-  if mongo = ENV['MONGOLAB_URI'] || ENV['MONGOHQ_URL']
+  if mongo = ENV['MONGOLAB_URI'] || ENV['MONGOHQ_URL'] || ENV['MONGODB_URL']
     settings = URI.parse(mongo)
     database_name = settings.path.gsub(/^\//, '')
   else
@@ -20,11 +20,22 @@ elsif ENV['HEROKU'] || ENV['USE_ENV']
   end
 
   Mongoid.configure do |config|
-    config.master = Mongo::Connection.new(
-      settings.host,
-      settings.port
-    ).db(database_name)
-    config.master.authenticate(settings.user, settings.password) if settings.user
+
+    hash = {
+      sessions: {
+        default: {
+          database: database_name,
+          hosts: [ "#{settings.host}:#{settings.port}" ]
+        }
+      },
+    }
+
+    if settings.user && settings.password
+      hash[:sessions][:default][:username] = settings.user
+      hash[:sessions][:default][:password] = settings.password
+    end
+
+    config.load_configuration(hash)
   end
 end
 

@@ -3,6 +3,19 @@
 Errbit can be almost configured by some ENVIRONMENT variables. If you
 use this variable, you don't need copy all of you configuration file
 
+## Ruby version
+
+You can define your own ruby version you want to use. By default it's
+the 2.0.0 to use. But you can change it with RUBY_VERSION variable.
+
+We test it on :
+
+ * 1.9.3
+ * 2.0.0
+ * 2.1.0
+
+## Use configuration by ENV
+
 To activate this env variable you need activate it by a Variable env.
 You can do that with HEROKU or USE_ENV variable
 
@@ -69,3 +82,9 @@ variable.
 * MONGOID_PASSWORD
 * MONGOID_DATABASE
 
+## Flowdock notification adapter
+
+If you noticed default Gravatar icon in your Flowdock notifications you
+may want to [add Errbit icon](http://gravatar.com) for email that is
+set in ERRBIT_EMAIL_FROM.
+You don't need to approve or authorize it on Flowdock because it is used only for an icon.

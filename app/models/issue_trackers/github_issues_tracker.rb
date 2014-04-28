@@ -29,15 +29,19 @@ if defined? Octokit
     def create_issue(problem, reported_by = nil)
       # Login using OAuth token, if given.
       if oauth_token
-        client = Octokit::Client.new(:login => username, :oauth_token => oauth_token)
+        client = Octokit::Client.new(:login => username, :access_token => oauth_token)
       else
         client = Octokit::Client.new(:login => username, :password => password)
       end
 
       begin
-        issue = client.create_issue(project_id, issue_title(problem), body_template.result(binding).unpack('C*').pack('U*'))
+        issue = client.create_issue(
+          project_id,
+          issue_title(problem),
+          body_template.result(binding).unpack('C*').pack('U*')
+        )
         problem.update_attributes(
-          :issue_link => issue.html_url,
+          :issue_link => issue.rels[:html].href,
           :issue_type => Label
         )
 

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe CommentObserver do
+describe "Callback on Comment" do
   context 'when a Comment is saved' do
     let(:comment) { Fabricate.build(:comment) }
 
@@ -8,9 +8,9 @@ describe CommentObserver do
       before { comment.stub(:emailable?).and_return(true) }
 
       it 'should send an email notification' do
-        Mailer.should_receive(:comment_notification).
+        expect(Mailer).to receive(:comment_notification).
           with(comment).
-          and_return(mock('email', :deliver => true))
+          and_return(double('email', :deliver => true))
         comment.save
       end
     end
@@ -19,7 +19,7 @@ describe CommentObserver do
       before { comment.stub(:emailable?).and_return(false) }
 
       it 'should not send an email notification' do
-        Mailer.should_not_receive(:comment_notification)
+        expect(Mailer).to_not receive(:comment_notification)
         comment.save
       end
     end

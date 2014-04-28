@@ -12,7 +12,7 @@ class AppsController < ApplicationController
   }
 
   expose(:apps) {
-    app_scope.all.sort
+    app_scope.all.sort.to_a
   }
 
   expose(:app, :ancestor => :app_scope)
@@ -80,13 +80,20 @@ class AppsController < ApplicationController
     end
   end
 
+  def regenerate_api_key
+    app.regenerate_api_key!
+    redirect_to edit_app_path(app)
+  end
+
   protected
 
     def initialize_subclassed_issue_tracker
       # set the app's issue tracker
       if params[:app][:issue_tracker_attributes] && tracker_type = params[:app][:issue_tracker_attributes][:type]
-        if IssueTracker.subclasses.map(&:name).concat(["IssueTracker"]).include?(tracker_type)
-          app.issue_tracker = tracker_type.constantize.new(params[:app][:issue_tracker_attributes])
+        available_tracker_classes = [IssueTracker] + IssueTracker.subclasses
+        tracker_class = available_tracker_classes.detect{|c| c.name == tracker_type}
+        if !tracker_class.nil?
+          app.issue_tracker = tracker_class.new(params[:app][:issue_tracker_attributes])
         end
       end
     end
@@ -94,8 +101,10 @@ class AppsController < ApplicationController
     def initialize_subclassed_notification_service
       # set the app's notification service
       if params[:app][:notification_service_attributes] && notification_type = params[:app][:notification_service_attributes][:type]
-        if NotificationService.subclasses.map(&:name).concat(["NotificationService"]).include?(notification_type)
-          app.notification_service = notification_type.constantize.new(params[:app][:notification_service_attributes])
+        available_notification_classes = [NotificationService] + NotificationService.subclasses
+        notification_class = available_notification_classes.detect{|c| c.name == notification_type}
+        if !notification_class.nil?
+          app.notification_service = notification_class.new(params[:app][:notification_service_attributes])
         end
       end
     end
@@ -138,4 +147,3 @@ class AppsController < ApplicationController
       end
     end
 end
-

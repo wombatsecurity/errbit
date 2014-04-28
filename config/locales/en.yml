@@ -35,13 +35,13 @@ en:
       flash:
         create:
           success: "Your app was successfully created."
-          error:  "You app was successfully destroyed."
+          error:  "Your app could not be created."
         update:
-          success: "You app was successfully updated."
-          error: "You app was not updated"
+          success: "Your app was successfully updated."
+          error: "Your app could not be updated."
         destroy:
-          success: "You app was successfully destroyed."
-          error: "You app could not be destroyed."
+          success: "Your app was successfully destroyed."
+          error: "Your app could not be destroyed."
 
     users:
       flash:
@@ -57,7 +57,6 @@ en:
         merge_several:
           success: "%{nb} errors have been merged."
 
-
   devise:
     registrations:
       signed_up_but_unconfirmed: 'A message with a confirmation link has been sent to your email address. Please open the link to activate your account.'
@@ -66,3 +65,65 @@ en:
     omniauth_callbacks:
       failure: "Could not authenticate you from %{kind} because \"%{reason}\"."
       success: "Successfully authenticated from %{kind} account."
+    sessions:
+      new:
+        sign_in: "Sign in"
+
+  problems:
+    confirm:
+      delete: "Permanently delete selected issues?"
+      resolve: "Resolve selected issues? They can be unresolved later."
+      resolve_one: "Resolve this issue? It can be unresolved later."
+      merge: "Merge select issues? They can be unmerged later."
+      unmerge: "Unmerge selected issues? They can be re-merged later."
+      unresolve: "Unresolve selected issues? They can be resolved again later."
+
+  comments:
+    confirm_delete: "Permanently delete this comment?"
+  users:
+    confirm_delete: "Permanently delete this user?"
+  apps:
+    confirm_delete: "Permanently delete this app?"
+    confirm_destroy_all_problems: "Permanently delete all of this app's errors?"
+    index:
+      notify: Notification Service
+      tracker: Tracker
+      last_deploy: Last Deploy
+      errors: Errors
+      name: Name
+      repository: Repository
+      title: Apps
+      new_app: Add a New App
+      no_apps: 'No apps here.'
+      click_to_create: 'Click here to create your first one'
+    fields:
+      regenerate_api_key: "Regenerate API key"
+    show:
+      all_deploys: "All Deploys (%{count})"
+      all_errs: all errs
+      all_users_notified: "All users will be notified when something happens."
+      api_key: "API Key:"
+      are_you_sure: 'Are you sure?'
+      atom_title: "Errbit notices for %{name} at %{host}"
+      deploy_count: "Deploy Count:"
+      edit: edit
+      environment: Environment
+      errors: Errors
+      errors_caught: "Errors Caught:"
+      github_repo: GitHub Repo
+      latest_deploys: Latest Deploys
+      message: Message
+      no_deploys:  No deploys
+      no_error_yet: "No errs have been caught yet, make sure you setup your app"
+      no_watcher: "Sadly, no one is watching this app"
+      repository: Repository
+      revision: Revision
+      search_placeholder: 'Search for issues'
+      show_hide: "(show/hide)"
+      unresolved_errs: unresolved errs
+      unwatch: unwatch
+      user_or_email: User or Email
+      watchers: Watchers
+      when:  When
+      who: Who
+

@@ -8,12 +8,12 @@ describe NotificationService::PushoverService do
     problem = notice.problem
 
     # hoi stubbing
-    notification = mock('PushoverService')
+    notification = double('PushoverService')
     Rushover::Client.stub(:new).and_return(notification)
     notification.stub(:notify) { true }
 
     #assert
-    notification.should_receive(:notify)
+    expect(notification).to receive(:notify)
 
     notification_service.create_notification(problem)
   end
