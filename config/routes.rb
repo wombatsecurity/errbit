@@ -1,4 +1,4 @@
-Errbit::Application.routes.draw do
+Rails.application.routes.draw do
 
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
 
@@ -50,7 +50,7 @@ Errbit::Application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :problems, :only => [:index], :defaults => { :format => 'json' }
+      resources :problems, :only => [:index, :show], :defaults => { :format => 'json' }
       resources :notices,  :only => [:index], :defaults => { :format => 'json' }
       resources :stats, :only => [], :defaults => { :format => 'json' } do
         collection do
@@ -60,7 +60,8 @@ Errbit::Application.routes.draw do
     end
   end
 
-  root :to => 'apps#index'
+  match '/api/v3/projects/:project_id/notices' => 'api/v3/notices#create', via: [:post, :options]
 
+  root :to => 'apps#index'
 end
 
