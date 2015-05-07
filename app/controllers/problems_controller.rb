@@ -12,26 +12,21 @@ class ProblemsController < ApplicationController
     :resolve_several, :unresolve_several, :unmerge_several
   ]
 
+  expose(:app_scope) {
+    apps = current_user.admin? ? App.all : current_user.apps
+    params[:app_id] ? apps.where(:_id => params[:app_id]) : apps
+  }
+
   expose(:app) {
-    if current_user.admin?
-      App.find(params[:app_id])
-    else
-      current_user.apps.find(params[:app_id])
-    end
+    AppDecorator.new app_scope.find(params[:app_id])
   }
 
   expose(:problem) {
     app.problems.find(params[:id])
   }
 
-
   expose(:all_errs) {
     params[:all_errs]
-  }
-
-  expose(:app_scope) {
-    apps = current_user.admin? ? App.all : current_user.apps
-    params[:app_id] ? apps.where(:_id => params[:app_id]) : apps
   }
 
   expose(:params_environement) {
@@ -61,10 +56,9 @@ class ProblemsController < ApplicationController
   end
 
   def create_issue
-    body = render_to_string "issue_trackers/issue", layout: false, formats: [:txt]
-    title = "[#{ problem.environment }][#{ problem.where }] #{problem.message.to_s.truncate(100)}"
+    issue = Issue.new(problem: problem, user: current_user)
+    issue.body = render_to_string(*issue.render_body_args)
 
-    issue = Issue.new(problem: problem, user: current_user, title: title, body: body)
     unless issue.save
       flash[:error] = issue.errors.full_messages.join(', ')
     end
@@ -79,7 +73,7 @@ class ProblemsController < ApplicationController
 
   def resolve
     problem.resolve!
-    flash[:success] = 'Great news everyone! The err has been resolved.'
+    flash[:success] = 'Great news everyone! The error has been resolved.'
     redirect_to :back
   rescue ActionController::RedirectBackError
     redirect_to app_path(app)
