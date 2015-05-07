@@ -1,29 +1,15 @@
-rails_env = ENV['RAILS_ENV'] || 'production'
+# http://michaelvanrooijen.com/articles/2011/06/01-more-concurrency-on-a-single-heroku-dyno-with-the-new-celadon-cedar-stack/
 
-worker_processes 16
-working_directory "/var/www/errbit/"
-
-# This loads the application in the master process before forking
-# worker processes
-# Read more about it here:
-# http://unicorn.bogomips.org/Unicorn/Configurator.html
+worker_processes 3 # amount of unicorn workers to spin up
+timeout 30         # restarts workers that hang for 30 seconds
 preload_app true
+listen ENV['PORT'] || 8080
+pid ENV['UNICORN_PID'] if ENV['UNICORN_PID']
 
-timeout 30
-
-# This is where we specify the socket.
-# We will point the upstream Nginx module to this socket later on
-listen "/var/www/errbit/tmp/sockets/unicorn.sock", :backlog => 64
-listen 3001, :tcp_nopush => true
-
-pid "/var/www/errbit/tmp/pids/unicorn.pid"
-
-# Set the path of the log files inside the log folder of the testapp
-stderr_path "/var/www/errbit/log/unicorn.stderr.log"
-stdout_path "/var/www/errbit/log/unicorn.stdout.log"
-
+# Taken from github: https://github.com/blog/517-unicorn
+# Though everyone uses pretty miuch the same code
 before_fork do |server, worker|
-    ##
+  ##
   # When sent a USR2, Unicorn will suffix its pidfile with .oldbin and
   # immediately start loading up a new version of itself (loaded with a new
   # version of our app). When this new Unicorn is completely loaded
@@ -34,7 +20,7 @@ before_fork do |server, worker|
   #
   # Using this method we get 0 downtime deploys.
 
-  old_pid = '/var/www/errbit/tmp/pids/unicorn.pid.oldbin'
+  old_pid = "#{server.config[:pid]}.oldbin"
   if File.exists?(old_pid) && server.pid != old_pid
     begin
       Process.kill("QUIT", File.read(old_pid).to_i)
@@ -42,17 +28,5 @@ before_fork do |server, worker|
       # someone else did our job for us
     end
   end
-# This option works in together with preload_app true setting
-# What is does is prevent the master process from holding
-# the database connection
-  defined?(ActiveRecord::Base) and
-    ActiveRecord::Base.connection.disconnect!
-end
-
-after_fork do |server, worker|
-    # Here we are establishing the connection after forking worker
-    # processes
-    defined?(ActiveRecord::Base) and
-      ActiveRecord::Base.establish_connection
 end
 
