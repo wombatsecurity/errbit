@@ -9,8 +9,13 @@ describe NotificationService::SlackService, type: 'model' do
     payload = {
       :attachments => [
         {
+<<<<<<< HEAD
            :fallback => message_for_slack(problem),
            :pretext => "<#{problem_url(problem)}|Errbit - #{problem.app.name}: #{problem.error_class}>",
+=======
+           :fallback => notification_service.message_for_slack(problem),
+           :pretext => "<#{notification_service.problem_url(problem)}|Errbit - #{problem.app.name}: #{problem.error_class}>",
+>>>>>>> b8620f3abd61aef163531d4ffa8cfadc2f022144
            :color => "#D00000",
            :fields => [
               {
