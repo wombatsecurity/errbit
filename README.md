@@ -10,7 +10,6 @@
 [gemnasium-url]:https://gemnasium.com/errbit/errbit
 
 ### The open source, self-hosted error catcher
-
 Errbit is a tool for collecting and managing errors from other applications.
 It is [Airbrake](http://airbrake.io) API compliant, so if you are already using
 Airbrake, you can just point the `airbrake` gem to your Errbit server.
