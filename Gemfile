@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-RAILS_VERSION = '~> 4.1.8'
+RAILS_VERSION = '~> 4.1.11'
 
 send :ruby, ENV['GEMFILE_RUBY_VERSION'] if ENV['GEMFILE_RUBY_VERSION']
 
@@ -99,6 +99,7 @@ group :heroku, :production do
   gem 'unicorn', require: false, platform: 'ruby'
 end
 
+gem 'therubyracer', :platform => :ruby  # C Ruby (MRI) or Rubinius, but NOT Windows
 gem 'sass-rails'
 gem 'coffee-rails'
 gem 'uglifier'
