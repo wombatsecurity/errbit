@@ -1,0 +1,1 @@
+gem 'errbit_pivotal_plugin', :git => 'https://github.com/Astarodubtcev/errbit_pivotal_plugin.git', :branch => 'latest-errbit-compability'
