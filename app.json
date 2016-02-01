@@ -4,10 +4,13 @@
   "keywords": ["productivity", "tools", "error tracking"],
   "repository": "https://github.com/errbit/errbit",
   "env": {
-    "GEMFILE_RUBY_VERSION": "2.2.0",
+    "ERRBIT_ENFORCE_SSL": "true",
+    "GEMFILE_RUBY_VERSION": "2.2.4",
     "SECRET_KEY_BASE": {
       "generator": "secret"
-    }
+    },
+    "EMAIL_DELIVERY_METHOD": "smtp",
+    "SMTP_SERVER": "smtp.sendgrid.net"
   },
   "addons": [
     "mongolab:sandbox",
