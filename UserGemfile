@@ -1,1 +1,1 @@
-gem 'errbit_pivotal_plugin', :git => 'https://github.com/Astarodubtcev/errbit_pivotal_plugin.git', :branch => 'latest-errbit-compability'
+gem 'errbit_jira_plugin', :git => 'git@github.com:launchpadrecruits/errbit_jira_plugin.git', :branch => 'bugfix-params'

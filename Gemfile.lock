@@ -1,3 +1,12 @@
+GIT
+  remote: git@github.com:launchpadrecruits/errbit_jira_plugin.git
+  revision: 68146171496ad4addfa1602089b8d5ae498f78b4
+  branch: bugfix-params
+  specs:
+    errbit_jira_plugin (0.3.0)
+      errbit_plugin
+      jira-ruby
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -160,6 +169,9 @@ GEM
       json (~> 1.8)
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
+    jira-ruby (0.1.18)
+      activesupport
+      oauth (~> 0.4.7)
     jquery-rails (2.1.4)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
@@ -214,6 +226,7 @@ GEM
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
     nokogiri (1.6.7.2-java)
+    oauth (0.4.7)
     oauth2 (1.0.0)
       faraday (>= 0.8, < 0.10)
       jwt (~> 1.0)
@@ -441,6 +454,7 @@ DEPENDENCIES
   draper
   email_spec
   errbit_github_plugin
+  errbit_jira_plugin!
   errbit_plugin
   fabrication
   flowdock
@@ -486,6 +500,3 @@ DEPENDENCIES
   useragent
   xmpp4r
   yajl-ruby
-
-BUNDLED WITH
-   1.11.2
