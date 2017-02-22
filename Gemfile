@@ -1,16 +1,8 @@
 source 'https://rubygems.org'
 
-RAILS_VERSION = '~> 4.2.5.1'
+RAILS_VERSION = '~> 4.2.5.2'
 
 send :ruby, ENV['GEMFILE_RUBY_VERSION'] if ENV['GEMFILE_RUBY_VERSION']
-
-detected_ruby_version = Gem::Version.new(RUBY_VERSION.dup)
-required_ruby_version = Gem::Version.new('2.1.0') # minimum supported version
-
-if detected_ruby_version < required_ruby_version
-  fail "RUBY_VERSION must be at least #{required_ruby_version}, " \
-       "detected RUBY_VERSION #{RUBY_VERSION}"
-end
 
 gem 'actionmailer', RAILS_VERSION
 gem 'actionpack', RAILS_VERSION
@@ -58,6 +50,8 @@ gem 'flowdock'
 # ---------------------------------------
 # GitHub OAuth
 gem 'omniauth-github'
+# Google OAuth
+gem 'omniauth-google-oauth2'
 
 gem 'ri_cal'
 gem 'yajl-ruby', platform: 'ruby'
@@ -78,6 +72,7 @@ group :development do
   gem 'capistrano-rbenv',   require: false
   gem 'capistrano3-puma',   require: false
 
+
   # better errors
   gem 'better_errors'
   gem 'binding_of_caller', platform: 'ruby'
@@ -93,6 +88,7 @@ group :test do
   gem 'fabrication'
   gem 'capybara'
   gem 'poltergeist'
+  gem 'phantomjs'
   gem 'launchy'
   gem 'email_spec'
   gem 'timecop'
@@ -103,8 +99,11 @@ group :heroku, :production do
   gem 'rails_12factor', require: ENV.key?("HEROKU")
 end
 
+group :no_docker, :test, :development do
+ gem 'therubyracer', :platform => :ruby # C Ruby (MRI) or Rubinius, but NOT Windows
+end
+
 gem 'puma'
-gem 'therubyracer', platform: :ruby # C Ruby (MRI) or Rubinius, but NOT Windows
 gem 'sass-rails'
 gem 'uglifier'
 # We can't upgrade because not compatible to jquery >= 1.9.
@@ -112,6 +111,8 @@ gem 'uglifier'
 gem 'jquery-rails', '~> 2.1.4'
 gem 'pjax_rails'
 gem 'underscore-rails'
+
+gem 'sucker_punch'
 
 ENV['USER_GEMFILE'] ||= './UserGemfile'
 eval_gemfile ENV['USER_GEMFILE'] if File.exist?(ENV['USER_GEMFILE'])

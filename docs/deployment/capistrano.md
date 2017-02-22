@@ -18,12 +18,12 @@ $EDITOR config/deploy.rb
 cp config/deploy/production.example.rb config/deploy/production.rb
 $EDITOR config/deploy/production.rb
 
-# Check to make sure configs exist
-bundle exec cap production deploy:check
-
 # Create the configs yourself, or run errbit:setup to upload the
 # defaults
 bundle exec cap production errbit:setup
+
+# Check to make sure configs exist
+bundle exec cap production deploy:check
 
 # Deploy
 bundle exec cap production deploy
@@ -75,7 +75,7 @@ rbenv=1 bundle exec cap production deploy
 
 ## Schedule recurring tasks
 You may want to periodically clear resolved errors to free up space.
-Schedule ```rake errbit:db:clear_resolved``` to run every day or so.
+Schedule ```rake errbit:clear_resolved``` to run every day or so.
 
 
 ## Monit

@@ -54,7 +54,7 @@ module AirbrakeApi
       end
 
       def request
-        environment = params['environment'].merge(
+        environment = (params['environment'] || {}).merge(
           'HTTP_USER_AGENT' => context['userAgent']
         )
 
@@ -72,9 +72,9 @@ module AirbrakeApi
         return context['user'] if context['user']
 
         {
-          'id' => context['userId'],
-          'name' => context['userName'],
-          'email' => context['userEmail'],
+          'id'       => context['userId'],
+          'name'     => context['userName'],
+          'email'    => context['userEmail'],
           'username' => context['userUsername']
         }.compact
       end
@@ -84,7 +84,7 @@ module AirbrakeApi
       end
 
       def hostname
-        URI.parse(url).hostname
+        context['hostname'] || URI.parse(url).hostname
       rescue URI::InvalidURIError
         ''
       end

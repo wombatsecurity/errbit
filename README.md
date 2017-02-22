@@ -107,7 +107,7 @@ Authentication
 --------------
 ### Configuring GitHub authentication:
 * Set GITHUB_AUTHENTICATION=true
-* Register your instance of Errbit at https://github.com/settings/applications
+* Register your instance of Errbit at https://github.com/settings/applications/new
 
 If you host Errbit at errbit.example.com, you would fill in:
 
@@ -115,13 +115,13 @@ If you host Errbit at errbit.example.com, you would fill in:
 <dt>URL
 <dd>http://errbit.example.com
 <dt>Callback URL
-<dd>http://errbit.example.com/users/auth/github
+<dd>http://errbit.example.com/users/auth/github/callback
 </dl>
 
 * After you have registered your app, set GITHUB_CLIENT_ID and GITHUB_SECRET
   with your app's Client ID and Secret key.
 
-When you start your applicatoin, you should see the option to **Sign in with
+When you start your application, you should see the option to **Sign in with
 GitHub** on the Login page. You will also be able to link your GitHub profile
 to your user account on your **Edit profile** page.
 
@@ -148,9 +148,29 @@ few others that could make sense for your needs:
   organization can log in to Errbit through GitHub. Errbit will provision
   accounts for new users.
 
+### Configuring Google authentication:
+* Set GOOGLE_AUTHENTICATION=true
+* Register your instance of Errbit at https://console.developers.google.com/apis/api/plus/overview
+
+If you host Errbit at errbit.example.com, you would fill in:
+
+<dl>
+<dt>URL
+<dd>http://errbit.example.com
+<dt>Callback URL
+<dd>http://errbit.example.com/users/auth/google_oauth2/callback
+</dl>
+
+* After you have registered your app, set GOOGLE_CLIENT_ID and GOOGLE_SECRET
+  with your app's Client ID and Secret key.
+
+When you start your application, you should see the option to **Sign in with
+Google** on the Login page. You will also be able to link your Google profile
+to your user account on your **Edit profile** page.
+
 ### Configuring LDAP authentication:
 
-* Set USER_HAS_USERNAME=true
+* Set ERRBIT_USER_HAS_USERNAME=true
 * Follow the instructions at
   https://github.com/cschiewek/devise_ldap_authenticatable to set up the
   devise_ldap_authenticatable gem.
@@ -231,7 +251,7 @@ Errbit can now display information about the user who experienced an error.
 This gives you the ability to ask the user for more information,
 and let them know when you've fixed the bug.
 
-The Airbrake gem will look for ```current_user``` or ```current_member```. By defailt it will only send the ```id``` of the user, to specify other attributes you can set ```config.user_attributes```. See [the Airbrake wiki for more information](https://github.com/airbrake/airbrake/wiki/Sending-current-user-information).
+The Airbrake gem will look for ```current_user``` or ```current_member```. By default it will only send the ```id``` of the user, to specify other attributes you can set ```config.user_attributes```. See [the Airbrake wiki for more information](https://github.com/airbrake/airbrake/wiki/Sending-current-user-information).
 
 If user information is received with an error report,
 it will be displayed under the *User Details* tab:
@@ -242,17 +262,20 @@ This tab will be hidden if no user information is available.
 
 Javascript error notifications
 --------------------------------------
-
 You can log javascript errors that occur in your application by including the
 [airbrake-js](https://github.com/airbrake/airbrake-js) javascript library.
 
-Install airbrake-js according to the docs at
-[airbrake-js](https://github.com/airbrake/airbrake-js) and set your project and
-host as early as possible:
+Install airbrake-js according to the docs at and set your project and host as
+soon as you want to start reporting errors. Then follow along with the
+documentation at https://github.com/airbrake/airbrake-js/blob/master/README.md
 
 ```javascript
-Airbrake.setProject("ERRBIT API KEY", "ERRBIT API KEY");
-Airbrake.setHost("http://errbit.yourdomain.com");
+var airbrake = new airbrakeJs.Client({
+  projectId: 'ERRBIT API KEY',
+  projectKey: 'ERRBIT API KEY (again)',
+  reporter: 'xhr',
+  host: 'https://myerrbit.com'
+});
 ```
 
 Plugins and Integrations

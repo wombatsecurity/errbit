@@ -12,6 +12,12 @@ describe Api::V3::NoticesController, type: :controller do
     expect(response.headers['Access-Control-Allow-Headers']).to eq('origin, content-type, accept')
   end
 
+  it 'responds to an OPTIONS request' do
+    process :create, 'OPTIONS', project_id: 'nothingspecial'
+    expect(response.headers['Access-Control-Allow-Origin']).to eq('*')
+    expect(response.headers['Access-Control-Allow-Headers']).to eq('origin, content-type, accept')
+  end
+
   it 'returns created notice id in json format' do
     post :create, legit_body, legit_params
     notice = Notice.last
@@ -21,9 +27,9 @@ describe Api::V3::NoticesController, type: :controller do
     )
   end
 
-  it 'responds with 200 created on success' do
+  it 'responds with 201 created on success' do
     post :create, legit_body, legit_params
-    expect(response.status).to be(200)
+    expect(response.status).to be(201)
   end
 
   it 'responds with 400 when request attributes are not valid' do

@@ -56,7 +56,7 @@ In order of precedence Errbit uses:
 <dd>For production environments, you should run `rake secret` to generate a secret, unique key for this parameter
 <dd>defaults to f258ed69266dc8ad0ca79363c3d2f945c388a9c5920fc9a1ae99a98fbb619f135001c6434849b625884a9405a60cd3d50fc3e3b07ecd38cbed7406a4fccdb59c
 <dt>MONGO_URL
-<dd>URL connection string for mongo in the form mongodb://username:password@example.com:port To more easily set up connections to third party mongo providers, you can call this value MONGOLAB_URI, MONGOHQ_URL, MONGODB_URL or MONGO_URL
+<dd>URL connection string for mongo in the form mongodb://username:password@example.com:port To more easily set up connections to third party mongo providers, you can call this value MONGODB_URI, MONGOLAB_URI, MONGOHQ_URL, MONGODB_URL or MONGO_URL
 <dd>defaults to mongodb://localhost/errbit_&lt;Rails.env&gt;
 <dt>GITHUB_URL
 <dd>Use this URL for interacting github. This is useful if you have a github enterprise account and you're using a URL other than https://github.com
@@ -79,6 +79,16 @@ In order of precedence Errbit uses:
 <dt>GITHUB_SITE_TITLE</dt>
 <dd>The title to use for GitHub. This value is whatever you want displayed in the Errbit UI when referring to GitHub.</dd>
 <dd>defaults to GitHub</dd>
+<dt>GOOGLE_AUTHENTICATION
+<dd>Allow google sign-in via OAuth
+<dd>defaults to true
+<dt>GOOGLE_CLIENT_ID
+<dd>Client id of your google application
+<dt>GOOGLE_SECRET
+<dd>Secret key for your google application
+<dt>GOOGLE_SITE_TITLE</dt>
+<dd>The title to use for Google. This value is whatever you want displayed in the Errbit UI when referring to Google.</dd>
+<dd>defaults to Google</dd>
 <dt>EMAIL_DELIVERY_METHOD
 <dd>:smtp or :sendmail, depending on how you want Errbit to send email
 <dt>SMTP_SERVER
@@ -93,6 +103,10 @@ In order of precedence Errbit uses:
 <dd>Password for SMTP auth, you could also set SENDGRID_PASSWORD
 <dt>SMTP_DOMAIN
 <dd>HELO domain to set for outgoing SMTP messages, you can also use SENDGRID_DOMAIN
+<dt>SMTP_ENABLE_STARTTLS_AUTO
+<dd>Detects if STARTTLS is enabled in your SMTP server and starts to use it
+<dt>SMTP_OPENSSL_VERIFY_MODE
+<dd>When using TLS, you can set how OpenSSL checks the certificate. This is really useful if you need to validate a self-signed and/or a wildcard certificate. You can use the name of an OpenSSL verify constant ('none', 'peer', 'client_once', 'fail_if_no_peer_cert').
 <dt>SENDMAIL_LOCATION
 <dd>Path to sendmail
 <dt>SENDMAIL_ARGUMENTS

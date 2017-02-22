@@ -1,9 +1,3 @@
-##
-# Manage problems
-#
-# List of actions available :
-# MEMBER => :show, :edit, :update, :create, :destroy, :resolve, :unresolve, :create_issue, :unlink_issue
-# COLLECTION => :index, :all, :destroy_several, :resolve_several, :unresolve_several, :merge_several, :unmerge_several, :search
 class ProblemsController < ApplicationController
   include ProblemsSearcher
 
@@ -32,17 +26,14 @@ class ProblemsController < ApplicationController
   end
 
   expose(:problems) do
-    pro = Problem.
+    finder = Problem.
       for_apps(app_scope).
       in_env(params_environement).
       all_else_unresolved(all_errs).
       ordered_by(params_sort, params_order)
 
-    if request.format == :html
-      pro.page(params[:page]).per(current_user.per_page)
-    else
-      pro
-    end
+    finder = finder.search(params[:search]) if params[:search].present?
+    finder.page(params[:page]).per(current_user.per_page)
   end
 
   def index; end
@@ -52,6 +43,13 @@ class ProblemsController < ApplicationController
       page(params[:notice]).per(1)
     @notice  = NoticeDecorator.new @notices.first
     @comment = Comment.new
+  end
+
+  def close_issue
+    issue = Issue.new(problem: problem, user: current_user)
+    flash[:error] = issue.errors.full_messages.join(', ') unless issue.close
+
+    redirect_to app_problem_path(app, problem)
   end
 
   def create_issue
@@ -70,7 +68,7 @@ class ProblemsController < ApplicationController
 
   def resolve
     problem.resolve!
-    flash[:success] = 'Great news everyone! The error has been resolved.'
+    flash[:success] = t('.the_error_has_been_resolved')
     redirect_to :back
   rescue ActionController::RedirectBackError
     redirect_to app_path(app)
@@ -78,13 +76,13 @@ class ProblemsController < ApplicationController
 
   def resolve_several
     selected_problems.each(&:resolve!)
-    flash[:success] = "Great news everyone! #{I18n.t(:n_errs_have, count: selected_problems.count)} been resolved."
+    flash[:success] = "Great news everyone! #{I18n.t(:n_errs_have, count: selected_problems.count)} #{I18n.t('n_errs_have.been_resolved')}."
     redirect_to :back
   end
 
   def unresolve_several
     selected_problems.each(&:unresolve!)
-    flash[:success] = "#{I18n.t(:n_errs_have, count: selected_problems.count)} been unresolved."
+    flash[:success] = "#{I18n.t(:n_errs_have, count: selected_problems.count)} #{I18n.t('n_errs_have.been_unresolved')}."
     redirect_to :back
   end
 
@@ -105,27 +103,25 @@ class ProblemsController < ApplicationController
 
   def unmerge_several
     all = selected_problems.map(&:unmerge!).flatten
-    flash[:success] = "#{I18n.t(:n_errs_have, count: all.length)} been unmerged."
+    flash[:success] = "#{I18n.t(:n_errs_have, count: all.length)} #{I18n.t('n_errs_have.been_unmerged')}."
     redirect_to :back
   end
 
   def destroy_several
-    nb_problem_destroy = ProblemDestroy.execute(selected_problems)
-    flash[:notice] = "#{I18n.t(:n_errs_have, count: nb_problem_destroy)} been deleted."
+    DestroyProblemsByIdJob.perform_later(selected_problems_ids)
+    flash[:notice] = "#{I18n.t(:n_errs, count: selected_problems.size)} #{I18n.t('n_errs.will_be_deleted')}."
     redirect_to :back
   end
 
   def destroy_all
-    nb_problem_destroy = ProblemDestroy.execute(app.problems)
-    flash[:success] = "#{I18n.t(:n_errs_have, count: nb_problem_destroy)} been deleted."
+    DestroyProblemsByAppJob.perform_later(app.id)
+    flash[:success] = "#{I18n.t(:n_errs, count: app.problems.count)} #{I18n.t('n_errs.will_be_deleted')}."
     redirect_to :back
   rescue ActionController::RedirectBackError
     redirect_to app_path(app)
   end
 
   def search
-    ps = Problem.search(params[:search]).for_apps(app_scope).in_env(params[:environment]).all_else_unresolved(params[:all_errs]).ordered_by(params_sort, params_order)
-    self.problems = ps.page(params[:page]).per(current_user.per_page)
     respond_to do |format|
       format.html { render :index }
       format.js

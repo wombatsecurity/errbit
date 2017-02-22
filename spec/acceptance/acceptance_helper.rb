@@ -1,3 +1,4 @@
+require 'phantomjs/poltergeist'
 require 'capybara/rspec'
 require 'capybara/poltergeist'
 
@@ -16,6 +17,14 @@ def mock_auth(user = "test_user", token = "abcdef")
     },
     'credentials' => {
       'token' => token
+    }
+  )
+
+  OmniAuth.config.mock_auth[:google_oauth2] = Hashie::Mash.new(
+    provider: 'google',
+    uid: user,
+    info: {
+      email: 'errbit@errbit.example.com'
     }
   )
 end

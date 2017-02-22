@@ -1,18 +1,19 @@
 class AppsController < ApplicationController
   include ProblemsSearcher
 
-  before_action :require_admin!, except: [:index, :show]
+  before_action :require_admin!, except: [:index, :show, :search]
   before_action :parse_email_at_notices_or_set_default, only: [:create, :update]
   before_action :parse_notice_at_notices_or_set_default, only: [:create, :update]
-  respond_to :html
 
-  expose(:app_scope) { App }
+  expose(:app_scope) {
+    params[:search].present? ? App.search(params[:search]) : App.all
+  }
 
   expose(:apps) do
-    app_scope.all.to_a.sort.map { |app| AppDecorator.new(app) }
+    app_scope.to_a.sort.map { |app| AppDecorator.new(app) }
   end
 
-  expose(:app, ancestor: :app_scope, attributes: :app_params)
+  expose(:app)
 
   expose(:app_decorate) do
     AppDecorator.new(app)
@@ -49,21 +50,26 @@ class AppsController < ApplicationController
   end
 
   def create
+    process_fingerprinter_choice
     initialize_subclassed_notification_service
+
     if app.save
       redirect_to app_url(app), flash: { success: I18n.t('controllers.apps.flash.create.success') }
     else
-      flash[:error] = I18n.t('controllers.apps.flash.create.error')
+      flash.now[:error] = I18n.t('controllers.apps.flash.create.error')
       render :new
     end
   end
 
   def update
+    process_fingerprinter_choice
     initialize_subclassed_notification_service
+    app.update_attributes(app_params)
+
     if app.save
       redirect_to app_url(app), flash: { success: I18n.t('controllers.apps.flash.update.success') }
     else
-      flash[:error] = I18n.t('controllers.apps.flash.update.error')
+      flash.now[:error] = I18n.t('controllers.apps.flash.update.error')
       render :edit
     end
   end
@@ -76,7 +82,7 @@ class AppsController < ApplicationController
     if app.destroy
       redirect_to apps_url, flash: { success: I18n.t('controllers.apps.flash.destroy.success') }
     else
-      flash[:error] = I18n.t('controllers.apps.flash.destroy.error')
+      flash.now[:error] = I18n.t('controllers.apps.flash.destroy.error')
       render :show
     end
   end
@@ -86,10 +92,17 @@ class AppsController < ApplicationController
     redirect_to edit_app_path(app)
   end
 
+  def search
+    respond_to do |format|
+      format.html { render :index }
+      format.js
+    end
+  end
+
 protected
 
   def initialize_subclassed_notification_service
-    notification_type = params[:app].
+    notification_type = app_params.
       fetch(:notification_service_attributes, {}).
       fetch(:type, nil)
     return if notification_type.blank?
@@ -97,7 +110,7 @@ protected
     # set the app's notification service
     available_notification_classes = [NotificationService] + NotificationService.subclasses
     notification_class = available_notification_classes.detect { |c| c.name == notification_type }
-    if notification_class.present?
+    unless notification_class.nil?
       app.notification_service = notification_class.new(params[:app][:notification_service_attributes])
     end
   end
@@ -106,6 +119,7 @@ protected
     app.watchers.build if app.watchers.none?
     app.issue_tracker ||= IssueTracker.new
     app.notification_service = NotificationService.new unless app.notification_service_configured?
+    app.notice_fingerprinter = SiteConfig.document.notice_fingerprinter.dup if app.notice_fingerprinter.nil?
     app.copy_attributes_from(params[:copy_attributes_from]) if params[:copy_attributes_from]
   end
 
@@ -119,7 +133,12 @@ protected
     # Sanitize negative values, split on comma,
     # strip, parse as integer, remove all '0's.
     # If empty, set as default and show an error message.
-    email_at_notices = val.gsub(/-\d+/, "").split(",").map { |v| v.strip.to_i }.reject { |v| v == 0 }
+    email_at_notices = val
+      .gsub(/-\d+/, "")
+      .split(",")
+      .map { |v| v.strip.to_i }
+      .reject { |v| v == 0 }
+
     if email_at_notices.any?
       params[:app][:email_at_notices] = email_at_notices
     else
@@ -143,6 +162,14 @@ protected
     else
       default_array = params[:app][:notification_service_attributes][:notify_at_notices] = Errbit::Config.notify_at_notices
       flash[:error] = "Couldn't parse your notification frequency. Value was reset to default (#{default_array.join(', ')})."
+    end
+  end
+
+  def process_fingerprinter_choice
+    if params[:app].delete(:use_site_fingerprinter) == '0'
+      params[:app][:notice_fingerprinter_attributes][:source] = SiteConfig::CONFIG_SOURCE_APP
+    else
+      params[:app][:notice_fingerprinter_attributes] = SiteConfig.document.notice_fingerprinter_attributes
     end
   end
 
