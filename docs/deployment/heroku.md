@@ -7,6 +7,9 @@ you can use this deploy button to get a basic deployment running on Heroku.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/errbit/errbit/tree/master)
 
+After deploying the application, you still need to run `heroku run rake errbit:bootstrap` 
+to create indexes and get your admin user set up.
+
 ## The Hard Way
 
 We designed Errbit to work well with Heroku. These instructions should result
@@ -33,7 +36,7 @@ git commit -m "Update db/seeds.rb with initial login"
 heroku apps:create
 heroku addons:create mongolab:sandbox
 heroku addons:create sendgrid:starter
-heroku config:set GEMFILE_RUBY_VERSION=2.2.4
+heroku config:set GEMFILE_RUBY_VERSION=2.3.3
 heroku config:set SECRET_KEY_BASE="$(bundle exec rake secret)"
 heroku config:set ERRBIT_HOST=some-hostname.example.com
 heroku config:set ERRBIT_EMAIL_FROM=example@example.com
@@ -58,7 +61,7 @@ Option 1. With the heroku-scheduler add-on (replacement for cron):
 heroku addons:create scheduler:standard
 
 # Go open the dashboard to schedule the job.  You should use
-# 'rake errbit:db:clear_resolved' as the task command, and schedule it
+# 'rake errbit:clear_resolved' as the task command, and schedule it
 # at whatever frequency you like (once/day should work great).
 heroku addons:create scheduler
 ```
@@ -73,5 +76,5 @@ heroku addons:create cron:daily
 Option 3. Clear resolved errors manually:
 
 ```bash
-heroku run rake errbit:db:clear_resolved
+heroku run rake errbit:clear_resolved
 ```

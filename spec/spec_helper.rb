@@ -2,6 +2,7 @@
 # from the project root directory.
 ENV["RAILS_ENV"] = 'test'
 ENV["ERRBIT_LOG_LEVEL"] = 'fatal'
+ENV["ERRBIT_USER_HAS_USERNAME"] = 'false'
 
 if ENV['COVERAGE']
   require 'coveralls'
@@ -26,6 +27,7 @@ require 'xmpp4r'
 require 'xmpp4r/muc'
 require 'mongoid-rspec'
 require 'fabrication'
+require 'sucker_punch/testing/inline'
 require 'errbit_plugin/mock_issue_tracker'
 
 # Requires supporting files with custom matchers and macros, etc,

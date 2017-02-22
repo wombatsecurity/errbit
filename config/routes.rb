@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   resources :users do
     member do
       delete :unlink_github
+      delete :unlink_google
     end
   end
 
@@ -42,12 +43,16 @@ Rails.application.routes.draw do
         put :resolve
         put :unresolve
         post :create_issue
+        post :close_issue
         delete :unlink_issue
       end
     end
     resources :watchers, only: [:destroy, :update]
     member do
       post :regenerate_api_key
+    end
+    collection do
+      get :search
     end
   end
 
@@ -64,7 +69,7 @@ Rails.application.routes.draw do
   end
 
   match '/api/v3/projects/:project_id/create-notice' => 'api/v3/notices#create', via: [:post]
-  match '/api/v3/projects/:project_id/notices' => 'api/v3/notices#create', via: [:post]
+  match '/api/v3/projects/:project_id/notices' => 'api/v3/notices#create', via: [:post, :options]
 
   root to: 'apps#index'
 end

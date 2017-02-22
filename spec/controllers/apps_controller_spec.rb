@@ -2,6 +2,7 @@ describe AppsController, type: 'controller' do
   it_requires_authentication
   it_requires_admin_privileges for: { new: :get, edit: :get, create: :post, update: :put, destroy: :delete }
 
+  let(:app_params) {{ name: 'BestApp' }}
   let(:admin) { Fabricate(:admin) }
   let(:user) { Fabricate(:user) }
   let(:watcher) { Fabricate(:user_watcher, app: app, user: user) }
@@ -27,6 +28,11 @@ describe AppsController, type: 'controller' do
     Fabricate(:problem, app: app)
   end
   let(:problem_resolved) { Fabricate(:problem_resolved, app: app) }
+  let(:notice_fingerprinter) do
+    nf = SiteConfig.document.notice_fingerprinter
+    nf.backtrace_lines = 10
+    nf
+  end
 
   describe "GET /apps" do
     context 'when logged in as an admin' do
@@ -216,12 +222,12 @@ describe AppsController, type: 'controller' do
         end
 
         it "should redirect to the app page" do
-          post :create, app: {}
+          post :create, app: app_params
           expect(response).to redirect_to(app_path(@app))
         end
 
         it "should display a message" do
-          post :create, app: {}
+          post :create, app: app_params
           expect(request.flash[:success]).to match(/success/)
         end
       end
@@ -234,12 +240,12 @@ describe AppsController, type: 'controller' do
 
       context "when the update is successful" do
         it "should redirect to the app page" do
-          put :update, id: @app.id, app: {}
+          put :update, id: @app.id, app: app_params
           expect(response).to redirect_to(app_path(@app))
         end
 
         it "should display a message" do
-          put :update, id: @app.id, app: {}
+          put :update, id: @app.id, app: app_params
           expect(request.flash[:success]).to match(/success/)
         end
       end
@@ -261,7 +267,8 @@ describe AppsController, type: 'controller' do
 
       context "changing email_at_notices" do
         before do
-          Errbit::Config.per_app_email_at_notices = true
+          allow(Errbit::Config)
+            .to receive(:per_app_email_at_notices).and_return(true)
         end
 
         it "should parse legal csv values" do
@@ -269,6 +276,7 @@ describe AppsController, type: 'controller' do
           @app.reload
           expect(@app.email_at_notices).to eq [1, 4, 7, 8, 10]
         end
+
         context "failed parsing of CSV" do
           it "should set the default value" do
             @app = Fabricate(:app, email_at_notices: [1, 2, 3, 4])
@@ -296,6 +304,41 @@ describe AppsController, type: 'controller' do
           it "should not create issue tracker" do
             expect(@app.issue_tracker_configured?).to eq false
           end
+        end
+      end
+
+      context "selecting 'use site fingerprinter'" do
+        before(:each) do
+          SiteConfig.document.update_attributes(notice_fingerprinter: notice_fingerprinter)
+          put :update, id: @app.id, app: {
+            notice_fingerprinter_attributes: { backtrace_lines: 42 },
+            use_site_fingerprinter: '1'
+          }
+          @app.reload
+        end
+
+        it "should copy site fingerprinter into app fingerprinter" do
+          fingerprinter_attrs = @app.notice_fingerprinter.attributes.except('_id', 'source').to_h
+          expected_attrs = SiteConfig.document.notice_fingerprinter.attributes.except('_id', 'source').to_h
+          expect(fingerprinter_attrs).to eq(expected_attrs)
+        end
+      end
+
+      context "not selecting 'use site fingerprinter'" do
+        before(:each) do
+          SiteConfig.document.update_attributes(notice_fingerprinter: notice_fingerprinter)
+          put :update, id: @app.id, app: {
+            notice_fingerprinter_attributes: { backtrace_lines: 42 },
+            use_site_fingerprinter: '0'
+          }
+          @app.reload
+        end
+
+        it "shouldn't copy site fingerprinter into app fingerprinter" do
+          fingerprinter_attrs = @app.notice_fingerprinter.attributes.except('_id', 'source').to_h
+          expected_attrs = SiteConfig.document.notice_fingerprinter.attributes.except('_id', 'source').to_h
+          expect(fingerprinter_attrs).to_not eq(expected_attrs)
+          expect(@app.notice_fingerprinter.backtrace_lines).to be 42
         end
       end
     end
@@ -352,6 +395,36 @@ describe AppsController, type: 'controller' do
           expect(request).to redirect_to edit_app_path(app)
         end.to change { app.reload.api_key }
       end
+    end
+  end
+
+  describe "GET /apps/search" do
+    before do
+      sign_in user
+      @app1 = Fabricate(:app, name: 'Foo')
+      @app2 = Fabricate(:app, name: 'Bar')
+    end
+
+    it "renders successfully" do
+      get :search
+      expect(response).to be_success
+    end
+
+    it "renders index template" do
+      get :search
+      expect(response).to render_template('apps/index')
+    end
+
+    it "searches problems for given string" do
+      get :search, search: "\"Foo\""
+      expect(controller.apps).to include(@app1)
+      expect(controller.apps).to_not include(@app2)
+    end
+
+    it "works when given string is empty" do
+      get :search, search: ""
+      expect(controller.apps).to include(@app1)
+      expect(controller.apps).to include(@app2)
     end
   end
 end
